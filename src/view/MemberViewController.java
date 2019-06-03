@@ -7,6 +7,8 @@ import java.util.ResourceBundle;
 import application.Main;
 import controller.MemberService;
 import controller.MemberServiceImpl;
+import controller.TestController;
+import controller.TestControllerImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -23,12 +25,14 @@ import javafx.scene.control.Alert.AlertType;
 import model.Member;
 
 public class MemberViewController implements Initializable {
-	@FXML	private Button btnRegister;
+	@FXML	private Button btnCreate;
 	@FXML	private Button btnUpdate;
 	@FXML	private Button btnDelete;
-	@FXML	private Button btnExecute;
 	
+	@FXML	private Button btnExecute;
 	@FXML	private TextArea taExecute;
+	@FXML	private TextField tfExecute;
+	
 	@FXML	private TextField tfID;	
 	@FXML	private PasswordField tfPW;
 	@FXML	private TextField tfName;
@@ -42,8 +46,10 @@ public class MemberViewController implements Initializable {
 	
 	
 	private final ObservableList<Member> data = FXCollections.observableArrayList();
+	
 	ArrayList<Member> memberList;
 	MemberService memberService;
+	TestController ts;
 	
 	public MemberViewController() {
 		
@@ -51,6 +57,8 @@ public class MemberViewController implements Initializable {
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+		ts = new TestControllerImpl();
+		
 		/*
 		memberService = new MemberServiceImpl();
 		
@@ -61,14 +69,23 @@ public class MemberViewController implements Initializable {
 		tableViewMember.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> showMemberInfo(newValue));
 		
-		btnRegister.setOnMouseClicked(event -> handleCreate());		
 		*/
+		btnCreate.setOnMouseClicked(event -> handleCreate());		
+		
 		btnExecute.setOnMouseClicked(e -> handleExecute());
-		loadMemberTableView();
+		//loadMemberTableView();
 	}
+	String str =" "; //인스턴스 변수 - 객체변수, 객체가 존재하는 동안 메모리에 존재
 	@FXML 
 	private void handleExecute(){ // event source, listener, handler
-		taExecute.setText("Hello JavaFX!");
+		/*
+		str= taExecute.getText();
+		String name = tfExecute.getText();
+		str = str  + ts.appendTextArea(name);
+		
+		*/
+		str = ts.setTextArea(tfExecute.getText());
+		taExecute.setText(str);
 	}
 	
 	
@@ -99,13 +116,11 @@ public class MemberViewController implements Initializable {
 	@FXML 
 	private void handleCreate() { // event source, listener, handler
 		if(tfID.getText().length() > 0) {
-			Member newMember = new Member(tfID.getText(), tfPW.getText(), tfName.getText(), tfMobilePhone.getText());
-			if(memberService.create(newMember) >= 0)	
+			Member newMember = new Member(tfID.getText(), tfPW.getText(), tfName.getText(), " ");
 				data.add(newMember);
-			else
-				showAlert("ID �ߺ����� ����� �� �����ϴ�.");
+				tableViewMember.setItems(data);
 		} else
-			showAlert("ID�� �ʼ��׸� �Դϴ�.");
+			showAlert("ID입력오류");
 	}
 	@FXML 
 	private void handleUpdate() {
